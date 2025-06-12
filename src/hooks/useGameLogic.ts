@@ -146,22 +146,22 @@ export const useGameLogic = () => {
     switch (type) {
       case 'good-comment':
         text = COMMENT_TEMPLATES.good[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)];
-        points = 5; // Click to approve
+        points = -5; // Click to approve
         username = `u/PosiVibes${Math.floor(Math.random()*100)}`;
         break;
       case 'helpful-comment':
         text = COMMENT_TEMPLATES.helpful[Math.floor(Math.random() * COMMENT_TEMPLATES.helpful.length)];
-        points = 10; // Click to approve, more valuable
+        points = -10; // Click to approve, more valuable
         username = `u/SmartyPants${Math.floor(Math.random()*100)}`;
         break;
       case 'bad-comment':
         text = COMMENT_TEMPLATES.bad[Math.floor(Math.random() * COMMENT_TEMPLATES.bad.length)];
-        points = -10; // Click to DELETE (positive points for correct action)
+        points = 10; // Click to DELETE (positive points for correct action)
         username = `u/AngryTroll${Math.floor(Math.random()*100)}`;
         break;
       case 'spam-bot':
         text = COMMENT_TEMPLATES.spam[Math.floor(Math.random() * COMMENT_TEMPLATES.spam.length)];
-        points = -7; // Click to DELETE (positive points)
+        points = 7; // Click to DELETE (positive points)
         username = `u/SpamBot${Math.floor(Math.random()*1000)}`;
         break;
       case 'repost':
@@ -171,12 +171,12 @@ export const useGameLogic = () => {
         break;
       case 'gold-award':
         text = "Someone gave you Gold!";
-        points = 25; // Click to accept/acknowledge
+        points = -25; // Click to accept/acknowledge
         username = 'Reddit Gold!'; 
         break;
       case 'mod-warning':
         text = "MOD WARNING: Rule violation detected in comments!";
-        points = -25; // Click ONLY IF PROTECTED. This is the penalty for clicking unprotected.
+        points = 25; // Click ONLY IF PROTECTED. This is the penalty for clicking unprotected.
         username = 'r/Mods'; 
         break;
       case 'cake-day':
@@ -236,9 +236,8 @@ export const useGameLogic = () => {
       if (['good-comment', 'gold-award'].includes(object.type)) {
         newCombo = prev.combo + 1;
         const multiplier = Math.min(Math.floor(newCombo / 3) + 1, 5); // Cap at 5x
-        newPostKarma = prev.postKarma + (object.type === 'gold-award' ? 100 : 10) * multiplier;
+        newPostKarma = prev.postKarma + object.points * multiplier;
       } else if (['bad-comment', 'repost', 'mod-warning', 'rickroll'].includes(object.type)) {
-        // Check mod protection
         if (prev.powerUps.modProtection) {
           newPowerUps.modProtection = false; // Use up the protection
         } else {
