@@ -5,36 +5,67 @@ const GAME_DURATION = 30; // seconds
 
 const COMMENT_TEMPLATES = {
   good: [
-    "This is hilarious! 😂",
-    "Take my upvote!",
-    "LMAO this made my day",
-    "Quality content right here",
-    "This deserves gold!",
-    "Saving this post",
-    "Best meme I've seen today",
-    "You win the internet today"
+    { text: "This is hilarious! 😂", username: "r/funny" },
+    { text: "Take my upvote!", username: "r/all" },
+    { text: "LMAO this made my day", username: "u/LaughTrackLive" },
+    { text: "Quality content right here", username: "u/UpvoteEngineer" },
+    { text: "This deserves gold!", username: "u/KarmaInvestor" },
+    { text: "Saving this post", username: "u/BookmarkGoblin" },
+    { text: "Best meme I've seen today", username: "u/MemeSurgeon" },
+    { text: "You win the internet today", username: "u/WinnerOfWeb" }
+  ],
+  helpful: [
+    { text: "Summarized it better than OP", username: "u/SummaryBot9000" },
+    { text: "Great explanation, thanks!", username: "u/ClarityPlease" },
+    { text: "This helped me a lot!", username: "u/RealLearner" },
+    { text: "TIL something new!", username: "r/todayilearned" },
+    { text: "OP, you might want to check this:", username: "u/ExtraContext" },
+    { text: "Fantastic point!", username: "u/ThinkDeeper" },
+    { text: "Very insightful.", username: "u/ThreadPhilosopher" }
   ],
   bad: [
-    "This is stupid and you're dumb",
-    "Cringe af delete this",
-    "Nobody asked",
-    "This isn't funny",
-    "Reported for spam",
-    "You're what's wrong with Reddit",
-    "Downvoted and blocked",
-    "Kill yourself"
-  ],helpful: [
-    "Actually, the source is [link]!", "Great explanation, thanks!", "This helped me a lot!",
-    "TIL something new!", "OP, you might want to check this:", "Fantastic point!", "Very insightful."
+    { text: "This is stupid and you're dumb", username: "u/NoBrainGang" },
+    { text: "Cringe af delete this", username: "u/CringePolice" },
+    { text: "Nobody asked", username: "u/SilentMajority" },
+    { text: "“I feel bad for you, must be hard being this stupid.”", username: "u/KarenOfReddit" },
+    { text: "You're what's wrong with Reddit", username: "u/GatekeepingElite" },
+    { text: "Don’t take your meds, big pharma just wants you addicted", username: "r/conspiracy" },
+    { text: "Kill yourself", username: "u/EdgeMax2000" }
   ],
-  tricky: [ // These are often considered low-effort and removed
-    "First!", "This.", "Came here to say this",
-    "Underrated comment", "Edit: Thanks for the gold, kind stranger!", "Username checks out"
-  ],spam: [
-    "Check out my new crypto coin!", "FREE V-BUCKS HERE -> [dodgy.link]", "My onlyfans is better",
-    "Subscribe to my channel!", "!!!!!! CLICK HERE !!!!!!", "Nice post, visit my profile for more"
+  tricky: [
+    { text: "First!", username: "u/RefreshSniper" },
+    { text: "This.", username: "u/EchoBot77" },
+    { text: "Came here to say this", username: "u/MindReader77" },
+    { text: "Underrated comment", username: "u/KarmaWhale" },
+    { text: "Edit: Thanks for the gold, kind stranger!", username: "u/AwardBait" },
+    { text: "Username checks out", username: "r/me_irl" }
+  ],
+  troll: [
+    { text: "Poor people are just lazy, sorry not sorry", username: "r/unpopularopinion" },
+    { text: "Vaccines are government mind control", username: "r/conspiracy" },
+    { text: "Trans rights? More like mental illness rights", username: "u/TERFlogic101" },
+    { text: "Why do women even talk in tech threads?", username: "u/BrogrammerAlpha" },
+    { text: "Elon Musk > your entire bloodline", username: "u/MuskCultist" },
+    { text: "You’re all just NPCs anyway", username: "u/MatrixAwakened" },
+    { text: "Flat Earth makes more sense than NASA's lies", username: "u/GlobeDenier" },
+    { text: "Literally Hitler was misunderstood", username: "u/AltHistoryFan" },
+    { text: "“Trans people are mentally ill. Prove me wrong.”", username: "u/JustAskingQuestions" },
+    { text: "Reddit is full of brainwashed soyboys", username: "u/MeatPill" }
+  ],
+  spam: [
+    { text: "Check out my new crypto coin!", username: "u/CoinDropDev" },
+    { text: "FREE V-BUCKS HERE -> [dodgy.link]", username: "u/VbucksMaster" },
+    { text: "My onlyfans is better", username: "u/ThirstTrapBot" },
+    { text: "Subscribe to my channel!", username: "u/CloutHunterYT" },
+    { text: "!!!!!! CLICK HERE !!!!!!", username: "u/ClickStorm" },
+    { text: "Nice post, visit my profile for more", username: "u/PromoWizard" },
+    { text: "Earn $5000/month with this ONE trick!", username: "u/WealthHackers" },
+    { text: "Join our Discord to get free skins!", username: "u/SkinDropHype" },
+    { text: "I made $2,000 in a day from this site", username: "u/HustleGuru" },
+    { text: "DM me for a business opportunity", username: "u/DM4Success" }
   ]
 };
+
 
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -63,7 +94,7 @@ export const useGameLogic = () => {
           .filter(obj => obj.y < 110); // Remove objects that fell off screen
 
         // Spawn new objects
-        const shouldSpawn = Math.random() < 0.4;
+        const shouldSpawn = Math.random() < 0.2;
         let newObjects = [...updatedObjects];
         
         if (shouldSpawn) {
@@ -125,19 +156,20 @@ export const useGameLogic = () => {
 
   const createRandomComment = (): GameObject => {
     const types: GameObject['type'][] = [
-      'good-comment', 'good-comment', 'good-comment', 'good-comment',
-      'helpful-comment', 'helpful-comment',
-      'bad-comment', 'bad-comment', 'bad-comment',
-      'spam-bot', 'spam-bot',
-      'repost',
+      'good-comment', 'good-comment', 'good-comment', 'good-comment',  // 4x weight
+      'helpful-comment', 'helpful-comment',                           // 2x weight
+      'bad-comment', 'bad-comment', 'bad-comment',                    // 3x weight
+      'spam-bot', 'spam-bot',                                        // 2x weight
+      'repost',                                                      // 1x weight
       'gold-award',
       'mod-warning',
       'cake-day',
       'rickroll'
     ];
     
+    // The total weights are: good-comment: 4/15 (26.7%) helpful-comment: 2/15 (13.3%) bad-comment: 3/15 (20%) spam-bot: 2/15 (13.3%) All others: 1/15 (6.7% each)
     const type = types[Math.floor(Math.random() * types.length)];
-    
+
     let text = '';
     let points = 0;
     let username = '';
@@ -145,24 +177,24 @@ export const useGameLogic = () => {
     
     switch (type) {
       case 'good-comment':
-        text = COMMENT_TEMPLATES.good[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)];
+        text = COMMENT_TEMPLATES.good[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)].text;
         points = -5; // Click to approve
-        username = `u/PosiVibes${Math.floor(Math.random()*100)}`;
-        break;
+        username = COMMENT_TEMPLATES.good[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)].username;
+        break;  
       case 'helpful-comment':
-        text = COMMENT_TEMPLATES.helpful[Math.floor(Math.random() * COMMENT_TEMPLATES.helpful.length)];
+        text = COMMENT_TEMPLATES.helpful[Math.floor(Math.random() * COMMENT_TEMPLATES.helpful.length)].text;
         points = -10; // Click to approve, more valuable
-        username = `u/SmartyPants${Math.floor(Math.random()*100)}`;
+        username = COMMENT_TEMPLATES.helpful[Math.floor(Math.random() * COMMENT_TEMPLATES.helpful.length)].username;
         break;
       case 'bad-comment':
-        text = COMMENT_TEMPLATES.bad[Math.floor(Math.random() * COMMENT_TEMPLATES.bad.length)];
+        text = COMMENT_TEMPLATES.bad[Math.floor(Math.random() * COMMENT_TEMPLATES.bad.length)].text;
         points = 10; // Click to DELETE (positive points for correct action)
-        username = `u/AngryTroll${Math.floor(Math.random()*100)}`;
+        username = COMMENT_TEMPLATES.bad[Math.floor(Math.random() * COMMENT_TEMPLATES.bad.length)].username;
         break;
       case 'spam-bot':
-        text = COMMENT_TEMPLATES.spam[Math.floor(Math.random() * COMMENT_TEMPLATES.spam.length)];
+        text = COMMENT_TEMPLATES.spam[Math.floor(Math.random() * COMMENT_TEMPLATES.spam.length)].text;
         points = 7; // Click to DELETE (positive points)
-        username = `u/SpamBot${Math.floor(Math.random()*1000)}`;
+        username = COMMENT_TEMPLATES.spam[Math.floor(Math.random() * COMMENT_TEMPLATES.spam.length)].username;
         break;
       case 'repost':
         text = "I've seen this before... pretty sure it's a repost.";
@@ -185,9 +217,9 @@ export const useGameLogic = () => {
         username = `u/YourCakeDayAlt${Math.floor(Math.random()*100)}`;
         break;
       case 'rickroll':
-        text = "Never gonna give you up... Never gonna let you down...";
+        text = COMMENT_TEMPLATES.troll[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)].text;
         points = 3; // Click to DELETE (annoying but low impact)
-        username = `u/NeverGonna${Math.floor(Math.random()*100)}`;
+        username = COMMENT_TEMPLATES.troll[Math.floor(Math.random() * COMMENT_TEMPLATES.good.length)].username;
         break;
     }
 
