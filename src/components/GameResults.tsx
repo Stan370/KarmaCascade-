@@ -18,12 +18,12 @@ const GameResults: React.FC<GameResultsProps> = ({
   onRestart, 
   onShare 
 }) => {
-  const getModRank = (score: number) => {
-    if (score >= 100) return { rank: "Reddit Legend", color: "text-purple-600", message: "You could moderate r/all!" };
-    if (score >= 75) return { rank: "Super Moderator", color: "text-yellow-600", message: "The admins want to hire you!" };
-    if (score >= 50) return { rank: "Good Moderator", color: "text-green-600", message: "Your subreddit is lucky to have you!" };
-    if (score >= 25) return { rank: "Learning Mod", color: "text-blue-600", message: "Getting the hang of this!" };
-    if (score >= 10) return { rank: "Rookie Mod", color: "text-orange-600", message: "Not bad for a newbie!" };
+  const getModRank = (postKarma: number) => {
+    if (postKarma >= 500) return { rank: "Reddit Legend", color: "text-purple-600", message: "You could moderate r/all!" };
+    if (postKarma >= 400) return { rank: "Super Moderator", color: "text-yellow-600", message: "The admins want to hire you!" };
+    if (postKarma >= 300) return { rank: "Good Moderator", color: "text-green-600", message: "Your subreddit is lucky to have you!" };
+    if (postKarma >= 150) return { rank: "Learning Mod", color: "text-blue-600", message: "Getting the hang of this!" };
+    if (postKarma >= 50) return { rank: "Rookie Mod", color: "text-orange-600", message: "Not bad for a newbie!" };
     return { rank: "Chaos Creator", color: "text-red-600", message: "Maybe stick to lurking..." };
   };
 
@@ -37,8 +37,8 @@ const GameResults: React.FC<GameResultsProps> = ({
     return messages[Math.floor(Math.random() * messages.length)];
   };
 
-  const modRank = getModRank(score);
-  const isNewHighScore = score > highScore && highScore > 0;
+  const modRank = getModRank(postKarma);
+  const isNewHighScore = postKarma > highScore && highScore > 0;
 
   return (
     <div className="text-center space-y-6">
@@ -56,7 +56,8 @@ const GameResults: React.FC<GameResultsProps> = ({
           {score}
         </div>
         <div className="text-lg text-gray-600 mb-4">Comments Moderated</div>
-        
+        <div className="text-4xl font-bold text-gray-800 mb-2">Final Karma: {postKarma.toLocaleString()}</div>
+
         <div className={`text-xl font-bold ${modRank.color} mb-2`}>
           {modRank.rank}
         </div>
@@ -72,7 +73,7 @@ const GameResults: React.FC<GameResultsProps> = ({
           </div>
         )}
 
-        {score < 25 && (
+        {postKarma < 25 && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
             <div className="text-sm text-red-700 italic">
               {getFailureMessage()}
@@ -87,7 +88,7 @@ const GameResults: React.FC<GameResultsProps> = ({
           📊 Your Post's Final Stats
         </div>
         <div className="text-sm text-gray-700 space-y-1">
-          <div>• Final Karma: {postKarma.toLocaleString()} upvotes</div>
+          <div>• Final Karma: {postKarma.toLocaleString()} </div>
           <div>• Comments Handled: {score}</div>
           <div>• Longest Streak: x{combo}</div>
           <div>• Mod Status: {modRank.rank}</div>
