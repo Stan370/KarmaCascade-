@@ -18,14 +18,57 @@ const GameResults: React.FC<GameResultsProps> = ({
   onRestart, 
   onShare 
 }) => {
+  
   const getModRank = (postKarma: number) => {
-    if (postKarma >= 500) return { rank: "Reddit Legend", color: "text-purple-600", message: "You could moderate r/all!" };
-    if (postKarma >= 400) return { rank: "Super Moderator", color: "text-yellow-600", message: "The admins want to hire you!" };
-    if (postKarma >= 300) return { rank: "Good Moderator", color: "text-green-600", message: "Your subreddit is lucky to have you!" };
-    if (postKarma >= 150) return { rank: "Learning Mod", color: "text-blue-600", message: "Getting the hang of this!" };
-    if (postKarma >= 50) return { rank: "Rookie Mod", color: "text-orange-600", message: "Not bad for a newbie!" };
-    return { rank: "Chaos Creator", color: "text-red-600", message: "Maybe stick to lurking..." };
+    if (postKarma < 0) {
+      return {
+        rank: "Shadow Banned",
+        color: "text-gray-700",
+        message: "You nuked the good stuff and let trolls feast. The admins banned *you*.",
+      };
+    }
+    if (postKarma >= 500) {
+      return {
+        rank: "Reddit Legend",
+        color: "text-purple-600",
+        message: "You could moderate r/all blindfolded.",
+      };
+    }
+    if (postKarma >= 400) {
+      return {
+        rank: "Super Moderator",
+        color: "text-yellow-600",
+        message: "The admins are watching… in awe.",
+      };
+    }
+    if (postKarma >= 300) {
+      return {
+        rank: "Good Moderator",
+        color: "text-green-600",
+        message: "Your subreddit bows before your justice.",
+      };
+    }
+    if (postKarma >= 150) {
+      return {
+        rank: "Learning Moderator",
+        color: "text-blue-600",
+        message: "You've tasted power. You want more.",
+      };
+    }
+    if (postKarma >= 50) {
+      return {
+        rank: "Rookie Moderator",
+        color: "text-orange-600",
+        message: "Not bad. The hammer fits your hand.",
+      };
+    }
+    return {
+      rank: "Chaos Creator",
+      color: "text-red-600",
+      message: "Maybe stick to lurking… or join r/modabuse.",
+    };
   };
+  
 
   const getFailureMessage = () => {
     const messages = [
@@ -51,15 +94,16 @@ const GameResults: React.FC<GameResultsProps> = ({
             <Star className="w-6 h-6 animate-spin" />
           </div>
         )}
+        <div className="">Comments Moderated:<div className="text-2xl font-bold text-gray-800 mb-2">
+        {score} 
+      </div></div>
         
-        <div className="text-4xl font-bold text-gray-800 mb-2">
-          {score}
+        <div className="">Final Karma:
+          <div className="text-4xl font-bold text-gray-800 mb-2"> {postKarma.toLocaleString()}</div>
         </div>
-        <div className="text-lg text-gray-600 mb-4">Comments Moderated</div>
-        <div className="text-4xl font-bold text-gray-800 mb-2">Final Karma: {postKarma.toLocaleString()}</div>
 
         <div className={`text-xl font-bold ${modRank.color} mb-2`}>
-          {modRank.rank}
+          You're a {modRank.rank}
         </div>
         <div className="text-sm text-gray-600 mb-4">
           {modRank.message}
@@ -119,7 +163,7 @@ const GameResults: React.FC<GameResultsProps> = ({
       {highScore > 0 && (
         <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
           <Trophy className="w-4 h-4" />
-          Personal Best: {highScore} comments moderated
+          Personal Best: {highScore} karma moderated
         </div>
       )}
     </div>

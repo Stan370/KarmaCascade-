@@ -5,7 +5,6 @@ export interface GameObject {
   type: 'good-comment' | 'bad-comment' | 'repost' | 'gold-award' | 'mod-warning' | 'cake-day' | 'rickroll' | 'helpful-comment' | 'spam-bot';
   speed: number;
   points: number;
-  caught: boolean;
   username: string;
   text?: string;
 }

@@ -29,7 +29,7 @@ const COMMENT_TEMPLATES = {
     { text: "Nobody asked", username: "u/SilentMajority" },
     { text: "“I feel bad for you, must be hard being this stupid.”", username: "u/KarenOfReddit" },
     { text: "You're what's wrong with Reddit", username: "u/GatekeepingElite" },
-    { text: "Don’t take your meds, big pharma just wants you addicted", username: "r/conspiracy" },
+    { text: "Don't take your meds, big pharma just wants you addicted", username: "r/conspiracy" },
     { text: "Kill yourself", username: "u/EdgeMax2000" }
   ],
   tricky: [
@@ -46,7 +46,7 @@ const COMMENT_TEMPLATES = {
     { text: "Trans rights? More like mental illness rights", username: "u/TERFlogic101" },
     { text: "Why do women even talk in tech threads?", username: "u/BrogrammerAlpha" },
     { text: "Elon Musk > your entire bloodline", username: "u/MuskCultist" },
-    { text: "You’re all just NPCs anyway", username: "u/MatrixAwakened" },
+    { text: "You're all just NPCs anyway", username: "u/MatrixAwakened" },
     { text: "Flat Earth makes more sense than NASA's lies", username: "u/GlobeDenier" },
     { text: "Literally Hitler was misunderstood", username: "u/AltHistoryFan" },
     { text: "“Trans people are mentally ill. Prove me wrong.”", username: "u/JustAskingQuestions" },
@@ -94,8 +94,9 @@ export const useGameLogic = () => {
           .filter(obj => obj.y < 110); // Remove objects that fell off screen
 
         // Spawn new objects
-        const shouldSpawn = Math.random() < 0.2;
+        const shouldSpawn = Math.random() < 0.3;
         let newObjects = [...updatedObjects];
+        let newPowerUps = { ...prev.powerUps };
         
         if (shouldSpawn) {
           const newObject = createRandomComment();
@@ -105,16 +106,22 @@ export const useGameLogic = () => {
         // Auto-moderate during cake day
         if (prev.powerUps.cakeDay > 0) {
           newObjects = newObjects.map(obj => {
-            if (['good-comment', 'gold-award'].includes(obj.type) && !obj.caught) {
-              return { ...obj, caught: true };
+            if (['good-comment', 'gold-award'].includes(obj.type)) {
+              // Double the points for good comments during cake day
+              return { 
+                ...obj, 
+                points: obj.points * 2 // Double the reward
+              };
             }
             return obj;
           });
         }
 
+
         return {
           ...prev,
-          gameObjects: newObjects
+          gameObjects: newObjects,
+          powerUps: newPowerUps
         };
       });
     }, 80);
@@ -202,8 +209,8 @@ export const useGameLogic = () => {
         username = `u/ReposterPatrol${Math.floor(Math.random()*100)}`;
         break;
       case 'gold-award':
-        text = "Someone gave you Gold!";
-        points = -25; // Click to accept/acknowledge
+        text = "Someone gave you Gold! Thanks for the Gold Kind Stranger!";
+        points = -5; // Click to accept/acknowledge
         username = 'Reddit Gold!'; 
         break;
       case 'mod-warning':
@@ -230,7 +237,6 @@ export const useGameLogic = () => {
       type, 
       speed: 1.5 + Math.random() * 1,
       points,
-      caught: false,
       text,
       username
     };
@@ -255,30 +261,50 @@ export const useGameLogic = () => {
   const catchObject = useCallback((objectId: string) => {
     setGameState(prev => {
       const object = prev.gameObjects.find(obj => obj.id === objectId);
-      if (!object || object.caught) return prev;
+      if (!object) return prev;
 
-      const updatedObjects = prev.gameObjects.filter(obj => obj.id !== objectId);
+      const updatedObjects = prev.gameObjects.filter(obj => obj.id !== objectId); //remove object after clicked
 
       let newScore = prev.score + 1; // Always increment score by 1
       let newCombo = prev.combo;
       let newPowerUps = { ...prev.powerUps };
       let newPostKarma = prev.postKarma;
 
-      // Handle different comment types
-      if (['good-comment', 'gold-award'].includes(object.type)) {
-        newCombo = prev.combo + 1;
-        const multiplier = Math.min(Math.floor(newCombo / 3) + 1, 5); // Cap at 5x
-        newPostKarma = prev.postKarma + object.points * multiplier;
-      } else if (['bad-comment', 'repost', 'mod-warning', 'rickroll'].includes(object.type)) {
-        if (prev.powerUps.modProtection) {
-          newPowerUps.modProtection = false; // Use up the protection
-        } else {
-          newCombo = 0; // Break combo
-          newPostKarma = Math.max(1, prev.postKarma + object.points * 2);
+      // Handle different comment types in a more readable structure
+      switch (object.type) {
+        case 'good-comment': {
+          newCombo = prev.combo + 1;
+          newPowerUps.modProtection = true; // Good comment gives mod protection
+          const multiplier = Math.min(Math.floor(newCombo / 3) + 1, 5); // Cap at 5x
+          newPostKarma = prev.postKarma + object.points * multiplier;
+          break;
         }
-      } else if (object.type === 'cake-day') {
-        newPowerUps.cakeDay = 5; // 5 seconds of auto-moderation
-        newPostKarma = prev.postKarma + 10;
+        case 'gold-award': {
+          newPostKarma = prev.postKarma + object.points;
+          newPowerUps.modProtection = true; // Gold gives mod protection
+          break;
+        }
+        case 'cake-day': {
+          newPowerUps.cakeDay = 5; // 5 seconds of auto-moderation
+          newPostKarma = prev.postKarma + 10;
+          break;
+        }
+        case 'bad-comment':
+        case 'repost':
+        case 'mod-warning':
+        case 'rickroll': {
+          if (prev.powerUps.modProtection) {
+            newPowerUps.modProtection = false; // Use up the protection
+          } else {
+            newCombo = 0; // Break combo
+            newPostKarma = Math.max(1, prev.postKarma + object.points * 2);
+          }
+          break;
+        }
+        // Add more cases here if needed for other types
+        default:
+          // No special handling for other types
+          break;
       }
 
       return {

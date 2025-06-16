@@ -48,7 +48,9 @@ const GameArea: React.FC<GameAreaProps> = ({
     const baseClasses = "absolute cursor-pointer transition-all duration-100 hover:scale-105 rounded-lg p-2 text-xs font-medium shadow-md";
     const typeClasses = {
       'good-comment': 'bg-green-100 hover:bg-green-200 border-2 border-green-300 text-green-800',
+      'helpful-comment': 'bg-blue-100 hover:bg-blue-200 border-2 border-blue-300 text-blue-800',
       'bad-comment': 'bg-red-100 hover:bg-red-200 border-2 border-red-300 text-red-800 animate-pulse',
+      'spam-bot': 'bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 text-gray-800',
       'repost': 'bg-purple-100 hover:bg-purple-200 border-2 border-purple-300 text-purple-800',
       'gold-award': 'bg-yellow-100 hover:bg-yellow-200 border-2 border-yellow-300 text-yellow-800 animate-bounce',
       'mod-warning': 'bg-orange-100 hover:bg-orange-200 border-2 border-orange-300 text-orange-800 animate-pulse',
