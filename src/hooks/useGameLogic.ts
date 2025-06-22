@@ -96,32 +96,15 @@ export const useGameLogic = () => {
         // Spawn new objects
         const shouldSpawn = Math.random() < 0.3;
         let newObjects = [...updatedObjects];
-        let newPowerUps = { ...prev.powerUps };
         
         if (shouldSpawn) {
           const newObject = createRandomComment();
           newObjects.push(newObject);
         }
 
-        // Auto-moderate during cake day
-        if (prev.powerUps.cakeDay > 0) {
-          newObjects = newObjects.map(obj => {
-            if (['good-comment', 'gold-award'].includes(obj.type)) {
-              // Double the points for good comments during cake day
-              return { 
-                ...obj, 
-                points: obj.points * 2 // Double the reward
-              };
-            }
-            return obj;
-          });
-        }
-
-
         return {
           ...prev,
-          gameObjects: newObjects,
-          powerUps: newPowerUps
+          gameObjects: newObjects
         };
       });
     }, 80);
@@ -210,7 +193,7 @@ export const useGameLogic = () => {
         break;
       case 'gold-award':
         text = "Someone gave you Gold! Thanks for the Gold Kind Stranger!";
-        points = -5; // Click to accept/acknowledge
+        points = 5; // Click to accept/acknowledge
         username = 'Reddit Gold!'; 
         break;
       case 'mod-warning':
@@ -271,16 +254,23 @@ export const useGameLogic = () => {
       let newPostKarma = prev.postKarma;
 
       // Handle different comment types in a more readable structure
+      let pointsToAdd = object.points;
+      
+      // Double points during cake day for all clicked objects
+      if (prev.powerUps.cakeDay > 0) {
+        pointsToAdd = object.points * 2;
+      }
+      
       switch (object.type) {
         case 'good-comment': {
           newCombo = prev.combo + 1;
           newPowerUps.modProtection = true; // Good comment gives mod protection
           const multiplier = Math.min(Math.floor(newCombo / 3) + 1, 5); // Cap at 5x
-          newPostKarma = prev.postKarma + object.points * multiplier;
+          newPostKarma = prev.postKarma + pointsToAdd * multiplier;
           break;
         }
         case 'gold-award': {
-          newPostKarma = prev.postKarma + object.points;
+          newPostKarma = prev.postKarma + pointsToAdd;
           newPowerUps.modProtection = true; // Gold gives mod protection
           break;
         }
@@ -297,7 +287,7 @@ export const useGameLogic = () => {
             newPowerUps.modProtection = false; // Use up the protection
           } else {
             newCombo = 0; // Break combo
-            newPostKarma = Math.max(1, prev.postKarma + object.points * 2);
+            newPostKarma = Math.max(1, prev.postKarma + pointsToAdd * 2);
           }
           break;
         }

@@ -16,7 +16,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, highScore }) => {
               <span className="text-white font-bold text-xl">👁️</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-800">
-              HungryAdmin Karma
+              HungryMod Karma
             </h1>
             <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-xl">⚖️</span>
