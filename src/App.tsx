@@ -51,6 +51,20 @@ function App() {
           <p className="mt-2">
             ⚡ How many will you banish today?
           </p>
+          <div className="mt-4">
+            <a 
+              id="bolt-button" 
+              href="https://bolt.new" 
+              target="_blank" 
+              title="Powered By Bolt"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 text-sm font-medium"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Powered by Bolt
+            </a>
+          </div>
         </div>
       </div>
     </div>
